@@ -17,7 +17,7 @@ An intelligent trading bot for Manifold Markets that trades exclusively on marke
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/mikhailtal-trader.git
+git clone https://github.com/peekcoding/manifoldbotpro.git
 cd mikhailtal-trader
 ```
 
@@ -38,7 +38,6 @@ Edit `.env` file with your credentials:
 
 - `MANIFOLD_API_KEY`: Your Manifold Markets API key (required)
 - `OPENAI_API_KEY`: OpenAI API key (optional, for GPT strategies)
-- `ANTHROPIC_API_KEY`: Anthropic API key (optional, for Claude strategies)
 - `BOT_USERNAME`: Your bot's Manifold username
 - `MAX_BET_AMOUNT`: Maximum bet size in Mana (default: 100)
 - `MIN_CONFIDENCE`: Minimum confidence to place bet (default: 0.6)
