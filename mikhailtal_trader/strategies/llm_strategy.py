@@ -1,19 +1,18 @@
 """
-LLM-based trading strategy using OpenAI or Anthropic models
+LLM-based trading strategy using OpenAI
 """
 import os
-from typing import Optional, Literal
+from typing import Optional
 from .base_strategy import BaseStrategy, StrategySignal
 
 
 class LLMStrategy(BaseStrategy):
-    """Strategy that uses LLMs to analyze markets"""
+    """Strategy that uses OpenAI LLMs to analyze markets"""
 
     def __init__(
         self,
-        name: str = "LLM Strategy",
-        provider: Literal["openai", "anthropic"] = "openai",
-        model: Optional[str] = None,
+        name: str = "GPT Strategy",
+        model: str = "gpt-4o-mini",
         api_key: Optional[str] = None
     ):
         """
@@ -21,44 +20,20 @@ class LLMStrategy(BaseStrategy):
 
         Args:
             name: Strategy name
-            provider: "openai" or "anthropic"
-            model: Model name (defaults to gpt-4 or claude-3-sonnet)
+            model: OpenAI model name (default: gpt-4o-mini)
             api_key: API key (if not in env)
         """
         super().__init__(name)
-        self.provider = provider
-        self.api_key = api_key
+        self.model = model
 
-        if provider == "openai":
-            self.model = model or "gpt-4o-mini"
-            self._init_openai()
-        elif provider == "anthropic":
-            self.model = model or "claude-3-5-sonnet-20241022"
-            self._init_anthropic()
-        else:
-            raise ValueError(f"Unknown provider: {provider}")
-
-    def _init_openai(self):
-        """Initialize OpenAI client"""
         try:
             from openai import OpenAI
-            api_key = self.api_key or os.getenv("OPENAI_API_KEY")
+            api_key = api_key or os.getenv("OPENAI_API_KEY")
             if not api_key:
-                raise ValueError("OpenAI API key required")
+                raise ValueError("OPENAI_API_KEY required in .env file")
             self.client = OpenAI(api_key=api_key)
         except ImportError:
             raise ImportError("openai package required. Install with: pip install openai")
-
-    def _init_anthropic(self):
-        """Initialize Anthropic client"""
-        try:
-            from anthropic import Anthropic
-            api_key = self.api_key or os.getenv("ANTHROPIC_API_KEY")
-            if not api_key:
-                raise ValueError("Anthropic API key required")
-            self.client = Anthropic(api_key=api_key)
-        except ImportError:
-            raise ImportError("anthropic package required. Install with: pip install anthropic")
 
     def analyze(self, market: dict) -> StrategySignal:
         """
@@ -77,11 +52,7 @@ class LLMStrategy(BaseStrategy):
         prompt = self._build_prompt(question, description, current_prob)
 
         try:
-            if self.provider == "openai":
-                response = self._query_openai(prompt)
-            else:
-                response = self._query_anthropic(prompt)
-
+            response = self._query_openai(prompt)
             return self._parse_response(response, current_prob)
 
         except Exception as e:
@@ -133,16 +104,6 @@ REASONING: Based on historical data and current trends, the outcome is more like
         )
         return response.choices[0].message.content
 
-    def _query_anthropic(self, prompt: str) -> str:
-        """Query Anthropic API"""
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=500,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response.content[0].text
 
     def _parse_response(self, response: str, current_prob: float) -> StrategySignal:
         """Parse LLM response into StrategySignal"""
