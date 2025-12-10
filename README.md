@@ -109,6 +109,10 @@ Contributions welcome! This project aims to:
 - Demonstrate clean, maintainable code
 - Achieve profitable trading performance
 
+## Demo In video
+[Download Video](https://drive.google.com/file/d/1R8TSFK5jbiUyo32x5F6Fe6pIzozCTf1-/view?usp=sharing)
+
+
 ## License
 
 MIT License
